@@ -3,10 +3,10 @@ const ctx = canvas.getContext("2d");
 
 const box = 20;
 const canvasSize = 400;
- isPaused =  true;
+isPaused =  true;
 let snake = [{ x: 200, y: 200 }];
 
-
+let lastLogTime = 0;
 let direction = "RIGHT";
 let food = generateFood();
 let score = 0;
@@ -30,32 +30,39 @@ function generateFood() {
 
 function draw() {
   if (isPaused) return;
+  /* let now = Date.now();
+  if (now - lastLogTime > 150) {  // cada 1000 ms (1 segundo)
+    console.log("Cabeza:", snake[0]);
+    lastLogTime = now;
+  }*/
+ 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (let i = 0; i < snake.length; i++) {
-    ctx.fillStyle = i === 0 ? "lime" : "green";
-    ctx.fillRect(snake[i].x, snake[i].y, box, box);
-  }
 
-  ctx.fillStyle = "red";
-  ctx.fillRect(food.x, food.y, box, box);
 
   let head = { ...snake[0] };
-  if (direction === "LEFT") head.x -= box;
+  if (direction === "LEFT") {head.x -= box;};
   if (direction === "RIGHT") head.x += box;
   if (direction === "UP") head.y -= box;
   if (direction === "DOWN") head.y += box;
- 
-
 
   if (
-    head.x < 0 || head.x >= canvasSize || head.y < 0 || head.y >= canvasSize ||
+    head.x < 0 || head.x > canvasSize || head.y < 0 || head.y > canvasSize ||
     snake.some(segment => segment.x === head.x && segment.y === head.y)
   ) {
+    console.log(head.y );
+    let bool = snake.some(segment => segment.x === head.x && segment.y === head.y);
+    let bool1 = head.x < 0;
+    let bool2 = head.x > canvasSize;
+    let bool3 = head.y < 0;
+    let bool4 = head.y > canvasSize ;
+    console.log(bool, bool1, bool2, bool3, bool4);
+    console.log("cabeaza:", snake[0]);
     alert("Game Over. Puntuación: " + score);
     document.location.reload();
     return;
   }
+
 
   if (head.x === food.x && head.y === food.y) {
     score++;
@@ -63,8 +70,14 @@ function draw() {
   } else {
     snake.pop();
   }
+    for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = i === 0 ? "lime" : "green";
+    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+  }
 
+  ctx.fillStyle = "red";
+  ctx.fillRect(food.x, food.y, box, box);
   snake.unshift(head);
 }
 
-setInterval(draw, 100);
+setInterval(draw, 150);
